@@ -1,0 +1,75 @@
+version: "3"
+
+services:
+  elasticsearch:
+    build: ./build/elasticsearch
+    volumes:
+      - ./opt/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./opt/elasticsearch/data:/usr/share/elasticsearch/data:z
+      - ./opt/elasticsearch/logs:/usr/share/elasticsearch/logs:z
+    container_name: elasticsearch565  # docker启动后的名称
+    privileged: true
+    hostname: elasticsearch
+    restart: always
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - ES_JAVA_OPTS=-Xms512m -Xmx1024m
+      - ELASTIC_PASSWORD=changeme
+    networks:
+      - elk
+
+  kibana:
+    build: ./build/kibana
+    volumes:
+      - ./opt/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    container_name: kibana565
+    hostname: kibana
+    depends_on:
+      - elasticsearch
+    restart: always
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    networks:
+      - elk
+
+#  filebeat:
+#    build: ./build/filebeat
+#    volumes:
+#      - ./opt/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+#      - ./opt/filebeat/log:/tmp
+#    container_name: filebeat565
+#    hostname: filebeat
+#    restart: always
+#    privileged: true
+#    depends_on:
+#      - elasticsearch
+#    networks:
+#      - elk
+
+  logstash:
+    build: ./build/logstash
+    volumes:
+      - ./opt/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./opt/logstash/pipeline:/usr/share/logstash/pipeline/logstash.conf:z
+      - ./opt/logstash/data:/usr/share/logstash/data:z
+      - ./opt/logstash/logs:/usr/share/logstash/logs:z
+    container_name: logstash565
+    hostname: logstash
+    restart: always
+    ports:
+      - "5000:5000"
+      - "9600:9600"
+    environment:
+      - LS_JAVA_OPTS=-Xms512m -Xmx1024m
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
+
+networks:
+  elk:
+    driver: bridge

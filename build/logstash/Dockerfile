@@ -1,0 +1,1 @@
+FROM docker.io/logstash:5.6.5

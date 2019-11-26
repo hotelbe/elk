@@ -1,0 +1,7 @@
+.idea
+opt/elasticsearch/data
+opt/elasticsearch/logs
+opt/kibana/logs
+opt/filebeat/logs
+opt/logstash/data
+opt/logstash/logs

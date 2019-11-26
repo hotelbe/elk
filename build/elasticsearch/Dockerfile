@@ -1,0 +1,1 @@
+FROM docker.io/elasticsearch:5.6.5

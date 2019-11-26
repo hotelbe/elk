@@ -1,0 +1,1 @@
+FROM docker.io/kibana:5.6.5
